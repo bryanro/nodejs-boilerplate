@@ -1,0 +1,30 @@
+﻿{
+	"name": "template",
+	"version": "0.1.0",
+	"description": "NodeJS template for RESTful web services with optional front-end",
+	"author": {
+		"name": "Bryan Rosenbaum",
+		"email": "bryan.rosenbaum@gmail.com"
+	},
+	"website":{
+		"url": "http://bryankrosenbaum.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bryanro/nodejs-template"
+	},
+	"private": false,
+	"dependencies": {
+		"express":			"latest",
+		"mongodb":			"latest",
+		"fs.extra":			"latest",
+		"moment":			"latest",
+		"mongoose":			"latest",
+		"underscore":		"latest",
+		"bcrypt":			"0.5.x",
+	},
+	"engines": {
+		"node":			"latest",
+		"npm":			"latest"
+	}
+}
