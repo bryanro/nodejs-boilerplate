@@ -40,12 +40,12 @@ The front end is housed in the '''/app/www''' folder.
 - css: includes bootstrap 3.0 and a style.js file that should hold all of the custom CSS
 - font: includes font awesome
 - js
--- collections
--- lib: common libraries used including: jquery, bootstrap, backbone, underscore, require, moment, less
--- models
--- router
--- util: contains helper function for showing errors
--- views
--- app.js: the requirejs file that initializes the router
--- main.js: the requirejs configuration file that points to app.js
+	- collections: placeholder folder for collection with a sample collections for users
+	- lib: common libraries used including: jquery, bootstrap, backbone, underscore, require, moment, less
+	- models: placeholder folder for models with a sample model for a user
+	- router: router for single-page structure
+	- util: contains helper function for showing errors
+	- views: placeholder folder for 
+	- app.js: the requirejs file that initializes the router
+	- main.js: the requirejs configuration file that points to app.js
 - index.html: the landing page
