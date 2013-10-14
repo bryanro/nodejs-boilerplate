@@ -4,7 +4,7 @@
 	"description": "NodeJS boilerplate for RESTful web services with optional front-end",
 	"author": {
 		"name": "Bryan Rosenbaum",
-		"email": "bryan.rosenbaum@gmail.com"
+		"email": "bryan@bryankrosenbaum.com"
 	},
 	"website":{
 		"url": "http://bryankrosenbaum.com"
