@@ -3,15 +3,15 @@
 	"version": "0.1.0",
 	"description": "NodeJS boilerplate for RESTful web services with optional front-end",
 	"author": {
-		"name": "Bryan Rosenbaum",
-		"email": "bryan@bryankrosenbaum.com"
+		"name": "Your Name Here",
+		"email": "yourname@yoursite.com"
 	},
 	"website":{
-		"url": "http://bryankrosenbaum.com"
+		"url": "http://yourwebsite.com"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/bryanro/nodejs-boilerplate"
+		"url": "http://yourrepository.com/projectname"
 	},
 	"private": false,
 	"dependencies": {
