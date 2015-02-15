@@ -115,7 +115,6 @@ Backup*/
 UpgradeLog*.XML
 
 
-
 ############
 ## Windows
 ############
@@ -128,40 +127,17 @@ Desktop.ini
 
 
 #############
-## Python
+## PROJECT
+#############
+upload/
+node_modules/
+npm-debug.log
+
+#############
+## WEBSTORM
 #############
 
-*.py[co]
-
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-
-# Installer logs
-pip-log.txt
-
-# Unit test / coverage reports
-.coverage
-.tox
-
-#Translations
-*.mo
-
-#Mr Developer
-.mr.developer.cfg
-
-# Mac crap
-.DS_Store
-
+.idea/
 
 #############
 ## PROJECT
@@ -169,3 +145,14 @@ pip-log.txt
 upload/
 node_modules/
 npm-debug.log
+
+
+#############
+## OSX
+#############
+.DS_Store
+
+#############
+## nedb database files
+#############
+*.db
