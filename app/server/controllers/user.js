@@ -1,8 +1,7 @@
 ﻿var mongoose = require('mongoose');
 var app = module.parent.exports.app;
 var UserModel = mongoose.model('User');
-var Config = require('./config');
-var logger = require('../modules/logger');
+var logger = require('winston');
 var _ = require('underscore');
 
 var UserController = {};
@@ -12,14 +11,14 @@ var UserController = {};
 /* CREATE USER */
 UserController.createNewUser = function (req, res) {
 
-    logger.debug('Entering createNewUser()', 'createNewUser');
+    logger.debug('Entering createNewUser()');
 
     var username = req.body.username;
     var password = req.body.password;
 
     if (typeof username === 'undefined' || typeof password === 'undefined') {
         logger.error('One or more request parameters is undefined: ' + 'username=' + username + ', password=*', 'createNewUser');
-        res.send(400, 'Invalid request');
+        res.status.send({ errorMessage: 'Invalid request' });
         return;
     }
 
@@ -27,28 +26,28 @@ UserController.createNewUser = function (req, res) {
 	// use regex for case insenitive
 	UserModel.findOne({ username: { $regex: new RegExp("^" + username + "$", "i") } }, function (err, existingUser) {
 		if (err) {
-			logger.error('Error finding user: ' + err, 'createNewUser', username);
+			logger.error('Error finding user: ' + err, 'createNewUser');
 			// 500 (Internal Server Error)
-			res.send(500, err);
+			res.status(500).send({ errorMessage: err });
 		}
 		else if (existingUser) {
-			logger.info('User already exists in database', 'createNewUser', username);
+			logger.info('User already exists in database');
 			// 500 (Internal Server Error)
-			res.send(400, 'User already exists in database');
+			res.status(400).send({ errorMessage: 'User already exists in database' });
 		}
 		else {
-			logger.debug('Username does not already exist, so create new user', 'createNewUser', username);
+			logger.debug('Username does not already exist, so create new user');
 			var user = new UserModel({ username: username, password: password });
 			user.save(function (err, user) {
 				if (err) {
-					logger.error('Error saving newly created user: ' + err, 'createNewUser', username);
-					res.send(500, err);
+					logger.error('Error saving newly created user: ' + err);
+					res.status(400).send({ errorMessage: err });
 				}
 				else {
-					logger.debug('Successfully saved user', 'createNewUser', username);
+					logger.debug('Successfully saved user');
 					req.session.auth = true;
 					req.session.user = user;
-					res.send(201, user);
+					res.status(201).send(user);
 				}
 			});
 		}
@@ -62,22 +61,22 @@ UserController.getAllUsers = function (req, res) {
     UserController.getUserFromSession(req, function (err, user) {
         if (err) {
             if (err === 'Unauthorized') {
-                res.send(401, 'Unauthorized');
+                res.status(401).send({ errorMessage: 'Unauthorized' });
             }
             else {
-                logger.error('Error getting user', 'getAllUsers');
-                res.send(500, err);
+                logger.error('Error getting user');
+                res.status(500).send({ errorMessage: err});
             }
         }
         else {
             UserModel.find({}, function (err, users) {
                 if (err) {
-                    logger.error('Error finding all users: ' + err, 'getAllUsers', user.username);
-                    res.send(500, err);
+                    logger.error('Error finding all users: ' + err);
+                    res.status(500).({ errorMessage: err });
                 }
                 else {
-                    logger.debug('Successfully found all users', 'getAllUsers', user.username);
-                    res.send(200, users);
+                    logger.debug('Successfully found all users');
+                    res.status(200).send(users);
                 }
             });
         }
@@ -86,7 +85,7 @@ UserController.getAllUsers = function (req, res) {
 
 UserController.changeUsername = function (req, res) {
 
-    logger.debug('Entering changeUsername()', 'changeUsername');
+    logger.debug('Entering changeUsername()');
 
     var newusername = req.body.newusername;
     var password = req.body.password;
@@ -94,51 +93,51 @@ UserController.changeUsername = function (req, res) {
     UserController.getUserFromSession(req, function (err, user) {
         if (err) {
             if (err === 'Unauthorized') {
-                res.send(401, 'Unauthorized');
+                res.status(401).send({ errorMessage: 'Unauthorized' });
             }
             else {
-                logger.error('Error getting user', 'changeUsername');
-                res.send(500, err);
+                logger.error('Error getting user');
+                res.status(500).send({ errorMessage: err });
             }
         }
         else {
             var username = user.username;
             if (typeof password === 'undefined' || typeof newusername === 'undefined') {
-                logger.error('One or more request parameters is undefined', 'changeUsername', user.username);
-                res.send(400, 'Invalid request data');
+                logger.error('One or more request parameters is undefined');
+                res.status(400).send({ errorMessage: 'Invalid request data'});
                 return;
             }
 
             logger.debug('User found, authenticate', 'changeUsername', user.username);
             user.authenticate(password, function (passwordMatch) {
                 if (!passwordMatch) {
-                    logger.warn('Current password does not match; cannot update username', 'changeUsername', user.username);
-                    res.send(400, 'Invalid password');
+                    logger.warn('Current password does not match; cannot update username');
+                    res.status(400).send({ errorMessage: 'Invalid password'});
                 }
                 else {
-                    logger.debug('Authentication successful', 'changeUsername', user.username);
+                    logger.debug('Authentication successful');
 
                     // validate that the new username doesn't already exist
                     UserModel.findOne({ username: { $regex: new RegExp("^" + newusername + "$", "i") } }, function (err, newuser) {
                         if (err) {
-                            logger.error('Error finding newusername: ' + err, 'changeUsername', user.username);
-                            res.send(500, err);
+                            logger.error('Error finding newusername: ' + err);
+                            res.status(500).send({ errorMessage: err });
                         }
                         else if (newuser) {
                             logger.warn('New username (' + newusername + ') already exists, so cannot change existing username', 'changeUsername', user.username);
-                            res.send(400, 'Username already exists');
+                            res.status(400).send({ errorMessage: 'Username already exists' });
                         }
                         else {
                             user.updateUsername(newusername, function (err, savedUser) {
                                 if (err) {
                                     logger.error('Error updating username: ' + err, 'changeUsername', user.username);
-                                    res.send(500, err);
+                                    res.status(500).send({ errorMessage: err });
                                 }
                                 else {
                                     logger.debug('Username updated successfully to ' + savedUser.username, 'changeUsername', user.username);
                                     // Need to save session again to account for changed user properties
                                     req.session.user = savedUser;
-                                    res.send(200, savedUser);
+                                    res.status(200).send(savedUser);
                                 }
                             });
                         }
@@ -159,17 +158,17 @@ UserController.changePassword = function (req, res) {
     UserController.getUserFromSession(req, function (err, user) {
         if (err) {
             if (err === 'Unauthorized') {
-                res.send(401, 'Unauthorized');
+                res.status(401).send({ errorMessage: 'Unauthorized' });
             }
             else {
                 logger.error('Error getting user', 'changePassword');
-                res.send(500, err);
+                res.status(500).send({ errorMessage: err });
             }
         }
         else {
             if (typeof currentpassword === 'undefined' || typeof newpassword === 'undefined') {
                 logger.error('One or more request parameters is undefined', 'changePassword', user.username);
-                res.send(400, 'Invalid request data');
+                res.status(400).send({ errorMessage: 'Invalid request data' });
                 return;
             }
 
@@ -178,19 +177,19 @@ UserController.changePassword = function (req, res) {
             user.authenticate(currentpassword, function (passwordMatch) {
                 if (!passwordMatch) {
                     logger.warn('Current password does not match; cannot update password', 'changePassword', user.username);
-                    res.send(400, 'Invalid password');
+                    res.status(400).send({ errorMessage: 'Invalid password' });
                 }
                 else {
                     user.updatePassword(newpassword, function (err, savedUser) {
                         if (err) {
                             logger.error('Error updating password: ' + err, 'changePassword', user.username);
-                            res.send(500, err);
+                            res.status(500).send({ errorMessage: err });
                         }
                         else {
                             logger.debug('Password updated successfully for user', 'changePassword', user.username);
                             // Need to save session again to account for changed user properties
                             req.session.user = savedUser;
-                            res.send(200, savedUser);
+                            res.status(200).send(savedUser);
                         }
                     });
                 }
@@ -207,7 +206,7 @@ UserController.updateUser = function (req, res) {
 
     if (!(newusername || newpassword)) {
         logger.error('Error updating user: no update parameters found', 'updateUser');
-        res.send(400, 'Error updating user: no update parameters found');
+        res.status(400).send({ errorMessage: 'Error updating user: no update parameters found' });
     }
     else if (newusername && !newpassword) {
         logger.debug('newusername is set', 'updateUser');
@@ -219,7 +218,7 @@ UserController.updateUser = function (req, res) {
     }
     else {
         logger.error('Error updating user: too many updates being made at once, only one allowed', 'updateUser');
-        res.send(400, 'Too many updates to user being made at once');
+        res.status(400).send({ errorMessage: 'Too many updates to user being made at once' });
     }
 }
 
@@ -239,15 +238,15 @@ UserController.getUserInfoFromSession = function (req, res) {
         UserModel.findOne({ username: username }, function (err, user) {
             if (err) {
                 logger.error('Error finding user: ' + err, 'getUserInfoFromSession', username);
-                res.send(500, err);
+                res.status(500).send({ errorMessage: err });
             }
             else if (!user) {
                 logger.error('User not found', 'getUserInfoFromSession', username);
-                res.send(400, 'User not found');
+                res.status(400).send({ errorMessage: 'User not found' });
             }
             else {
                 logger.debug('User found', 'getUserInfoFromSession', username);
-                res.send(200, user);
+                res.status(200).send(user);
             }
         });
     }
@@ -262,22 +261,22 @@ UserController.getUserInfoByUsername = function (req, res) {
 
     if (typeof username === 'undefined') {
         logger.error('username parameter is undefined', 'getUserInfoByUsername');
-        res.send(400, 'Invalid request');
+        res.status(400).send({ errorMessage: 'Invalid request' });
         return;
     }
 
     UserModel.findOne({ username: username }, function (err, user) {
         if (err) {
             logger.error('Error finding user: ' + err, 'getUserInfoByUsername', username);
-            res.send(500, err);
+            res.status(500).send({ errorMessage: err });
         }
         else if (!user) {
             logger.error('User not found', 'getUserInfoByUsername', username);
-            res.send(400, 'User not found');
+            res.status(400).send({ errorMessage: 'User not found' });
         }
         else {
             logger.debug('User found', 'getUserInfoByUsername', username);
-            res.send(200, user);
+            res.status(200).send(user);
         }
     });
 }
@@ -290,15 +289,15 @@ UserController.getUserInfoById = function (req, res) {
     UserModel.findById(userId, function (err, user) {
         if (err) {
             logger.error('Error finding user: ' + err, 'getUserInfo');
-            res.send(500, err);
+            res.status(500).send({ erorrMessage: err });
         }
         else if (!user) {
             logger.error('User not found', 'getUserInfo');
-            res.send(400, 'User not found');
+            res.status(400).send({ errorMessage: 'User not found' });
         }
         else {
             logger.debug('User found', 'getUserInfo', user.username);
-            res.send(200, user);
+            res.status(200).send(user);
         }
     });
 }
@@ -331,4 +330,4 @@ UserController.getUserFromSession = function (req, callback) {
 
 module.exports = UserController;
 
-logger.debug('user.js controller loaded', 'user.js');
+logger.debug('user.js controller loaded');

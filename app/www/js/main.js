@@ -7,7 +7,7 @@
         moment: 'lib/moment/moment-1.7.2.min',
         text: 'lib/require/text-2.0.7',
         underscore: 'lib/underscore/underscore-1.5.1',
-        util: 'util'
+        util: 'util/util'
     },
     shim: {
         underscore: {

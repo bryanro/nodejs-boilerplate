@@ -24,7 +24,7 @@
         showDefault: function () {
             this.userView = new UserView();
             this.userView.render();
-        },
+        }
     });
 
     var initialize = function () {

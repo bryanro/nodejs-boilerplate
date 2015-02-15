@@ -1,6 +1,6 @@
 ﻿{
 	"name": "boilerplate",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "NodeJS boilerplate for RESTful web services with optional front-end",
 	"author": {
 		"name": "Your Name Here",
@@ -16,14 +16,28 @@
 	"private": false,
 	"dependencies": {
 		"express":			"latest",
-		"mongodb":			"latest",
-		"fs.extra":			"latest",
+		"body-parser":  	"latest",
+		"method-override":  "latest",
+		"errorhandler": 	"latest",
+		"cookie-session":   "latest",
+	  	"cookie-parser":    "latest",
+	  	"jade":         	"latest",
+
+	  	"forever":      	"latest",
 		"moment":			"latest",
-		"mongoose":			"latest",
 		"underscore":		"latest",
-		"node-gyp":			"latest",
-		"bcrypt":			"latest",
-		"connect-mongo":	"latest"
+		"async":        	"latest",
+
+		"morgan":       	"latest",
+
+		"winston":      	"latest",
+
+		"cron":         	"latest",
+		"time":         	"latest",
+
+	  	"nedb":         	"latest",
+	  	"mongodb":			"latest",
+	  	"mongoose":			"latest"
 	},
 	"engines": {
 		"node":			"latest",
